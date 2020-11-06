@@ -3,9 +3,7 @@ import {
   ContentChildren,
   QueryList,
   AfterContentInit,
-  HostBinding,
   SimpleChange,
-  SimpleChanges
 } from '@angular/core';
 import { merge } from 'rxjs';
 
@@ -16,9 +14,10 @@ import { TerminatorService } from '../terminator.service';
 
 import { TemplateSchemaService } from './template-schema.service';
 import { FieldComponent } from './field/field.component';
-import { FieldType, Field } from './field/field';
+import { FieldType } from './field/field';
 import { ButtonComponent } from './button/button.component';
 import { FieldParent } from './field/field-parent';
+import {ISchema} from '../model/ISchema';
 
 
 @Directive({
@@ -49,14 +48,14 @@ export class TemplateSchemaDirective extends FieldParent implements AfterContent
       this.actionRegistry.clear();
       this.validatorRegistry.clear();
 
-      const schema = this.getFieldsSchema(fields);
+      const schema: ISchema = this.getFieldsSchema(fields);
 
       const validators = this.getFieldsValidators(fields);
       validators.forEach(({ path, validator }) => {
         this.validatorRegistry.register(path, validator);
       });
 
-      const previousSchema = this.formComponent.schema;
+      const previousSchema: ISchema = this.formComponent.schema;
       this.formComponent.schema = {
         type: FieldType.Object,
         properties: schema.properties

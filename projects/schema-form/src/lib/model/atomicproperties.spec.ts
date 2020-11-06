@@ -3,6 +3,10 @@ import {
 } from './atomicproperty';
 
 import {
+  StringProperty
+} from './stringproperty';
+
+import {
   NumberProperty
 } from './numberproperty';
 
@@ -13,6 +17,9 @@ import {
 import {
   ZSchemaValidatorFactory
 } from '../schemavalidatorfactory';
+import { JEXLExpressionCompilerFactory } from '../expression-compiler-factory';
+import {ISchema} from './ISchema';
+import { DefaultLogService, LogLevel } from '../log.service';
 
 class AtomicPropertyImpl extends AtomicProperty {
 
@@ -22,26 +29,30 @@ class AtomicPropertyImpl extends AtomicProperty {
 }
 
 describe('Atomic properties', () => {
-  let A_SCHEMA_VALIDATOR_FACTORY = new ZSchemaValidatorFactory();
-  let A_VALIDATOR_REGISTRY = new ValidatorRegistry();
+  const A_SCHEMA_VALIDATOR_FACTORY = new ZSchemaValidatorFactory();
+  const A_VALIDATOR_REGISTRY = new ValidatorRegistry();
+  const A_EXPRESSION_COMPILER_FACTORY = new JEXLExpressionCompilerFactory();
+  const A_LOGGER = new DefaultLogService(LogLevel.off);
 
   describe('AtomicProperty', () => {
-    let THE_PROPERTY_SCHEMA = {};
+    const THE_PROPERTY_SCHEMA = {};
     let atomicProperty: AtomicProperty;
 
     beforeEach(() => {
-      atomicProperty = new AtomicPropertyImpl(A_SCHEMA_VALIDATOR_FACTORY, A_VALIDATOR_REGISTRY, THE_PROPERTY_SCHEMA, null, '');
+      atomicProperty = new AtomicPropertyImpl(A_SCHEMA_VALIDATOR_FACTORY, A_VALIDATOR_REGISTRY, A_EXPRESSION_COMPILER_FACTORY, THE_PROPERTY_SCHEMA, null, '', A_LOGGER);
     });
 
     it('reset with no argument and default value in schema should use the default value', () => {
-      let THE_DEFAULT_VALUE = Symbol();
-      let A_SCHEMA_WITH_DEFAULT = {'default': THE_DEFAULT_VALUE };
-      let atomicPropertyWithDefault = new AtomicPropertyImpl(
+      const THE_DEFAULT_VALUE = Symbol();
+      const A_SCHEMA_WITH_DEFAULT = {'default': THE_DEFAULT_VALUE };
+      const atomicPropertyWithDefault = new AtomicPropertyImpl(
         A_SCHEMA_VALIDATOR_FACTORY,
         A_VALIDATOR_REGISTRY,
+        A_EXPRESSION_COMPILER_FACTORY,
         A_SCHEMA_WITH_DEFAULT,
         null,
-        ''
+        '',
+        A_LOGGER
       );
 
       atomicPropertyWithDefault.reset();
@@ -50,7 +61,7 @@ describe('Atomic properties', () => {
     });
 
     it('reset with no argument, and no default value in schema use property\'s type fallback default', () => {
-      let fallback = Symbol();
+      const fallback = Symbol();
       spyOn(atomicProperty, 'fallbackValue').and.returnValue(fallback);
 
       atomicProperty.reset();
@@ -59,17 +70,40 @@ describe('Atomic properties', () => {
     });
   });
 
-  describe('NumberProperty', () => {
+  describe('StringProperty', () => {
 
-    let AN_INT_PROPERTY_SCHEMA_WITHOUT_MINIMUM = {'type': 'number'};
+    const A_STRING_PROPERTY: ISchema = {'type': 'string'};
 
-    it('without minimum in schema should fallback to null on reset', () => {
-      let property = new NumberProperty(
+    it('should fallback to empty string', () => {
+      const property = new StringProperty(
         A_SCHEMA_VALIDATOR_FACTORY,
         A_VALIDATOR_REGISTRY,
+        A_EXPRESSION_COMPILER_FACTORY,
+        A_STRING_PROPERTY,
+        null,
+        '',
+        A_LOGGER
+      );
+
+      property.reset();
+
+      expect(property.value).toBe('');
+    });
+  });
+
+  describe('NumberProperty', () => {
+
+    const AN_INT_PROPERTY_SCHEMA_WITHOUT_MINIMUM: ISchema = {'type': 'number'};
+
+    it('without minimum in schema should fallback to null on reset', () => {
+      const property = new NumberProperty(
+        A_SCHEMA_VALIDATOR_FACTORY,
+        A_VALIDATOR_REGISTRY,
+        A_EXPRESSION_COMPILER_FACTORY,
         AN_INT_PROPERTY_SCHEMA_WITHOUT_MINIMUM,
         null,
-        ''
+        '',
+        A_LOGGER
       );
 
       property.reset();

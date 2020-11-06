@@ -4,7 +4,7 @@ import {
   OnInit,
   OnDestroy
 } from '@angular/core';
-import {WidgetRegistry, Validator, Binding} from 'ngx-schema-form';
+import {WidgetRegistry, Validator, Binding, FormProperty, PropertyGroup} from 'ngx-schema-form';
 import {Subscription} from 'rxjs';
 
 import sampleSchema1 from './sampleschema.json';
@@ -13,8 +13,11 @@ import sampleModel from './samplemodel.json';
 import binding_sample_schema from './binding_sample_schema.json';
 import binding_sample_model from './binding_sample_model.json';
 import binding_sample_bindings from './binding_sample_bindings';
+import visibility_binding_example from './visibility-binding-example-schema.json';
+import visibility_binding_example2 from './visibility-binding-example-schema2.json';
 
 import {AppService, AppData} from '../app.service';
+import {ISchema} from 'ngx-schema-form';
 
 @Component({
   selector: 'sf-json-schema-example',
@@ -22,7 +25,7 @@ import {AppService, AppData} from '../app.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class JsonSchemaExampleComponent implements OnInit, OnDestroy {
-  schema: any = {properties: {}};
+  schema: ISchema = {properties: {}};
   model: any = {};
   value: any;
   fieldValidators: { [fieldId: string]: Validator } = {};
@@ -35,7 +38,9 @@ export class JsonSchemaExampleComponent implements OnInit, OnDestroy {
   samples = [
     {label: 'Sample 1 - General', event: this.changeSchemaFirst, selected: true},
     {label: 'Sample 2 - Custom bindings', event: this.changeSchemaWithBindings, selected: false},
-    {label: 'Sample 3 - Otherschema', event: this.changeSchemaOtherschema, selected: false}
+    {label: 'Sample 3 - Otherschema', event: this.changeSchemaOtherschema, selected: false},
+    {label: 'Sample 4 - Visibility binding', event: this.changeSchemaVisibilityBinding, selected: false},
+    {label: 'Sample 5 - Visibility binding 2', event: this.changeSchemaVisibilityBinding2, selected: false},
   ];
 
   constructor(
@@ -77,7 +82,6 @@ export class JsonSchemaExampleComponent implements OnInit, OnDestroy {
   }
 
   changeSchema(event) {
-    console.log(event);
     for (const sample of this.samples) {
       if (sample.label === event) {
         sample.event.bind(this)();
@@ -86,7 +90,7 @@ export class JsonSchemaExampleComponent implements OnInit, OnDestroy {
   }
 
   changeSchemaFirst() {
-    this.schema = sampleSchema1;
+    this.schema = sampleSchema1 as unknown as ISchema;
     this.model = sampleModel;
     this.fieldBindings = {};
     this.fieldValidators = {};
@@ -180,11 +184,14 @@ export class JsonSchemaExampleComponent implements OnInit, OnDestroy {
     };
     this.actions['disable'] = this.disableAll.bind(this);
 
+    this.actions['toggle_title'] = (formProperty: FormProperty, form: PropertyGroup, params: any) => {
+      formProperty.schema.readOnly = !formProperty.schema.readOnly;
+    };
 
   }
 
   changeSchemaOtherschema() {
-    this.schema = sampleSchema2;
+    this.schema = sampleSchema1 as unknown as ISchema;
     this.model = {};
     this.fieldBindings = {};
     this.fieldValidators = {};
@@ -192,9 +199,25 @@ export class JsonSchemaExampleComponent implements OnInit, OnDestroy {
   }
 
   changeSchemaWithBindings() {
-    this.schema = binding_sample_schema;
+    this.schema = binding_sample_schema as unknown as ISchema;
     this.model = binding_sample_model;
     this.fieldBindings = binding_sample_bindings;
+    this.fieldValidators = {};
+    this.actions = {};
+  }
+
+  changeSchemaVisibilityBinding() {
+    this.schema = visibility_binding_example as unknown as ISchema;
+    this.model = {};
+    this.fieldBindings = {};
+    this.fieldValidators = {};
+    this.actions = {};
+  }
+
+  changeSchemaVisibilityBinding2() {
+    this.schema = visibility_binding_example2 as unknown as ISchema;
+    this.model = {};
+    this.fieldBindings = {};
     this.fieldValidators = {};
     this.actions = {};
   }

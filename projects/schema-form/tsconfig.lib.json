@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/lib",
-    "target": "es2015",
-    "module": "es2015",
+    "target": "es6",
+    "module": "es6",
     "moduleResolution": "node",
     "declaration": true,
     "sourceMap": true,
@@ -15,11 +15,10 @@
     "typeRoots": [ "../../node_modules/@types" ],
     "lib": [
       "dom",
-      "es2015"
+      "es2017"
     ]
   },
   "angularCompilerOptions": {
-    "annotateForClosureCompiler": true,
     "skipTemplateCodegen": true,
     "strictMetadataEmit": true,
     "fullTemplateTypeCheck": true,

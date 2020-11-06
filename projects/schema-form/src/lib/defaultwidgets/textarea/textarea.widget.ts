@@ -9,7 +9,8 @@ import { ControlWidget } from '../../widget';
 		{{ schema.title }}
 	</label>
     <span *ngIf="schema.description" class="formHelp">{{schema.description}}</span>
-	<textarea [attr.readonly]="schema.readOnly" [name]="name"
+	<textarea [readonly]="schema.readOnly" [name]="name"
+		[attr.id]="id"
 		class="text-widget textarea-widget form-control"
 		[attr.placeholder]="schema.placeholder"
 		[attr.maxLength]="schema.maxLength || null"

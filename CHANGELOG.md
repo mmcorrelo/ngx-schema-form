@@ -1,3 +1,91 @@
+# 2.5.7 (2020-08-17)
+
+- fix #360: VisibleIf-oneOf with 2+ conditions has same property name is not working (daniele-pecora)
+- fix #331: visibleIf stopped working in 2.5.2 (daniele-pecora)
+- fix #329: visibleIf "allOf" Edge case BUG (daniele-pecora)
+
+# 2.5.6 (2020-07-16)
+- Fix #358 Completing Public API
+
+# 2.5.5 (2020-07-16)
+- Fix #355 add README in dist
+
+# 2.5.4 (2020-07-13)
+
+- Log service (daniele-pecora)
+- Allow custom properties in schema (daniele-pecora)
+- Fix #338 bindings not supporting multiple event functions (daniele-pecora)
+- Fix: visibleIf returns turn even if only part of the value matches the expression (compare number to string fix)
+
+# 2.5.3 (2020-06-02)
+
+- Add extendable TypeScript interfaces for JSON Schema objects (artonio)
+
+
+# 2.5.2 (2020-04-09)
+
+- Fix: visibleIf returns turn even if only part of the value matches the expression
+
+#2.5.1 (2020-03-22)
+
+- Allow "VisibleIf" to work with numeric values
+
+# 2.5.0 (2020-02-28)
+
+- Upgrade to Angular 9 (ebrehault)
+
+# 2.4.4 (2020-02-26)
+
+- Expose more classes in Public API (anotherpit)
+
+# 2.4.3 (2020-01-24)
+
+- Setup auto-tagging and auto-release on NPM (ebrehault)
+
+# 2.4.2 (2020-01-16)
+
+- fix template when no rootProperty (ebrehault)
+- fix disabled state for reactive forms by using directive. fix #287 (daniele-pecora)
+
+# 2.4.1 (2019-09-11)
+
+- Fix circular dependency in models (ebrehault)
+
+# 2.4.0 (2019-07-29)
+
+- Feature #228: add support for expression in visibleIf condition (daniele-pecora)
+- Fix #293: hide or disable array widget add and remove button in relation to the settings of 'maxItems' and 'minItems' in schema (daniele-pecora)
+
+# 2.3.5 (2019-07-04)
+
+(fix build)
+
+# 2.3.4 (2019-07-01)
+
+- Upgrade to Angular 8 (ebrehault)
+
+# 2.3.3 (2019-06-14)
+
+- Update angular to 7.2 (mathilde-pellerin)
+
+# 2.3.2 (2018-12-17)
+
+- Extend visibleIf condition with `oneOf` and `allOf` (daniele-pecora)
+- Rename the `required` flag, fixed #263. (Invis1ble)
+- Reset SchemaValidator (daniele-pecora)
+- Fix disabled property (Jackson Vaughan)
+
+# 2.3.1 (2018-11-14)
+
+- Fix package.json to explicitly support Angular 6 and 7
+
+# 2.3.0 (2018-11-14)
+
+- Fix #233: do not emit modelChange twice (ebrehault)
+- Fix array item remove (ebrehault)
+- Angular 7 compliancy (ebrehault)
+- Fix perr dependencies (akloeber)
+
 # 2.2.0-beta.1 (2018-09-17)
 
 - Support custom bindings (Daniele Pecora)

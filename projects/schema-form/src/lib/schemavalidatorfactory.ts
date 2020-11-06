@@ -1,26 +1,58 @@
 import * as ZSchema from 'z-schema';
+import {Injectable} from '@angular/core';
+import {ISchema} from './model/ISchema';
+import {FieldType} from './template-schema/field/field';
 
 export abstract class SchemaValidatorFactory {
   abstract createValidatorFn(schema): (value: any) => any;
 
   abstract getSchema(schema, ref): any;
+
+  /**
+   * Override this method to reset the schema validator instance.<br/>
+   * This may be required since some schema validators keep a deep copy<br/>
+   * of your schemas and changes at runtime are not recognized by the schema validator.<br/>
+   * In this method you should either re-instantiate the schema validator or
+   * clear its cache.<br/>
+   * Example of re-instantiating schema validator
+   * <code>
+   *     reset(){
+   *         this.zschema = new ZSchema({})
+   *     }
+   * </code>
+   * <br/>
+   * Since this method it self does nothing there is <br/>
+   * no need to call the <code>super.reset()</code>
+   */
+  reset() {
+
+  }
 }
 
+@Injectable()
 export class ZSchemaValidatorFactory extends SchemaValidatorFactory {
 
   protected zschema;
 
   constructor() {
     super();
-    this.zschema = new ZSchema({
-        breakOnFirstError: false
+    this.createSchemaValidator()
+  }
+
+  private createSchemaValidator() {
+    this.zschema =  new ZSchema({
+      breakOnFirstError: false
     });
   }
 
-  createValidatorFn(schema: any) {
+  reset() {
+    this.createSchemaValidator()
+  }
+
+  createValidatorFn(schema: ISchema) {
     return (value): { [key: string]: boolean } => {
 
-      if (schema.type === 'number' || schema.type === 'integer') {
+      if (schema.type === FieldType.Number || schema.type === FieldType.Integer) {
         value = +value;
       }
 

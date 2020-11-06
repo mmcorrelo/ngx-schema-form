@@ -1,7 +1,11 @@
+import { PROPERTY_TYPE_MAPPING } from './typemapping';
 import {PropertyGroup} from './formproperty';
 import {FormPropertyFactory} from './formpropertyfactory';
 import {SchemaValidatorFactory} from '../schemavalidatorfactory';
 import {ValidatorRegistry} from './validatorregistry';
+import { ExpressionCompilerFactory } from '../expression-compiler-factory';
+import {ISchema} from './ISchema';
+import { LogService } from '../log.service';
 
 export class ObjectProperty extends PropertyGroup {
 
@@ -10,10 +14,12 @@ export class ObjectProperty extends PropertyGroup {
   constructor(private formPropertyFactory: FormPropertyFactory,
               schemaValidatorFactory: SchemaValidatorFactory,
               validatorRegistry: ValidatorRegistry,
-              schema: any,
+              expressionCompilerFactory: ExpressionCompilerFactory,
+              schema: ISchema,
               parent: PropertyGroup,
-              path: string) {
-    super(schemaValidatorFactory, validatorRegistry, schema, parent, path);
+              path: string,
+              logger: LogService) {
+    super(schemaValidatorFactory, validatorRegistry, expressionCompilerFactory, schema, parent, path, logger);
     this.createProperties();
   }
 
@@ -83,3 +89,17 @@ export class ObjectProperty extends PropertyGroup {
     this._value = value;
   }
 }
+
+PROPERTY_TYPE_MAPPING.object = (
+    schemaValidatorFactory: SchemaValidatorFactory,
+    validatorRegistry: ValidatorRegistry,
+    expressionCompilerFactory: ExpressionCompilerFactory,
+    schema: ISchema,
+    parent: PropertyGroup,
+    path: string,
+    formPropertyFactory: FormPropertyFactory,
+    logger: LogService
+) => {
+    return new ObjectProperty(
+        formPropertyFactory, schemaValidatorFactory, validatorRegistry, expressionCompilerFactory, schema, parent, path, logger);
+};

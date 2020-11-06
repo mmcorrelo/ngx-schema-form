@@ -1,4 +1,4 @@
-# Ngx Schema Form [![Build Status](https://travis-ci.org/makinacorpus/ngx-schema-form.svg?branch=master)](https://travis-ci.org/makinacorpus/ngx-schema-form)
+# Ngx Schema Form [![Build Status](https://travis-ci.org/guillotinaweb/ngx-schema-form.svg?branch=master)](https://travis-ci.org/guillotinaweb/ngx-schema-form)
 
 Ngx Schema Form is an Angular 2+ module allowing you to instanciate an HTML form from a [JSON schema](http://json-schema.org/).
 
@@ -12,7 +12,7 @@ We think `angular-schema-form` is a great Angular 1 library, and when it will mo
 
 ## Demo
 
-[Demo](https://makinacorpus.github.io/ngx-schema-form/dist/ngx-schema-form)
+[Demo](https://guillotinaweb.github.io/ngx-schema-form/dist/ngx-schema-form)
 
 ## Features
 
@@ -32,6 +32,22 @@ npm install ngx-schema-form --save
 ```
 
 You just have to check that all the peer-dependencies of this module are satisfied in your package.json.
+
+##### JSON Schema
+With the installation there comes a JSON-Schema file that declares all specific or additional
+properties supported by *ngx-schema-form*.
+
+When using `*.json` files you may declare it with the `$schema` property to let your IDE's autocompletion help you create a schema-form.
+
+```bash
+{
+  "$schema": "./node_modules/ngx-schema-form/ngx-schema-form-schema.json",
+  "title": "My awesome schema-form"
+  ...
+}
+
+```
+
 
 ## Getting started
 Here our goal will be to create a simple login form.
@@ -123,6 +139,12 @@ For instance, you can display the current forms's value with the following templ
 template: '<sf-form [schema]="mySchema" (onChange)="value=$event.value"></sf-form>{{value | json}}'
 ```
 
+The `model` property allow two-way data binding:
+
+```
+<sf-form [schema]="mySchema" [(model)]="value"></sf-form>{{value | json}}
+```
+
 ### Widgets
 Each field can be displayed using a specific widget.
 To declare the widget you want to use, add its `id` to the field's definition:
@@ -197,7 +219,7 @@ mySchema = {
 
 ### Default widget's registry
 Available widgets are managed through a `WidgetRegistry`.
-The default registry ([`DefaultWidgetRegistry`](./src/defaultwidgets/defaultwidgetregistry.ts)) contains many widgets listed below, ordered by type:
+The default registry ([`DefaultWidgetRegistry`](./projects/schema-form/src/lib/defaultwidgets/defaultwidgetregistry.ts)) contains many widgets listed below, ordered by type:
 
 - **string**: string, search, tel, url, email, password, color, date, date-time, time, textarea, select, file, radio, richtext
 - **number**: number, integer, range
@@ -404,7 +426,8 @@ export class AppComponent {
   // Declare a mapping between action ids and their implementations
   myValidators = {
     "/passwordCheck": (value, property, form) => {
-      if (controls.password !== undefined && controls.password.valid && value !== values.password) {
+      const passwordProperty = formProperty.findRoot().getProperty('password')
+      if (passwordProperty.value !== undefined && property.valid && value !== passwordProperty.value) {
         return { "passwordCheck": { "expectedValue": "same as 'password'" } }
       }
       return null;
@@ -499,9 +522,16 @@ export class AppComponent {
 ```
 
 ### Conditional fields
-It is possible to make the presence of a field depends on another field's value.
-To achieve this you just have to add a `visibleIf` property to a field's definition.
-Adding the value $ANY$ to the array of conditional values,will make the field visible for any value inserted.
+It is possible to make the presence of a field depends on another field's value.  
+To achieve this you just have to add a `visibleIf` property to a field's definition.  
+
+**Value**  
+The value to match is set as array item.  
+Setting multiple items will make the visiblity condition `true` if one of the values matches.  
+If it is required to match all values head over to the section `visibleIf` with `allOf` condition.  
+
+**$ANY$**  
+Adding the value `$ANY$` to the array of conditional values, will make the field visible for any value inserted. 
 
 ```js
 @Component({
@@ -541,7 +571,9 @@ export class AppComponent {
   }
 }
 ```
-Assigning an empty Object to 'visibleIf' is interpreted as _visibleIf_ nothing, thereby the widget is hidden.
+**$EMPTY$**  
+Assigning an empty Object to 'visibleIf' is interpreted as _visibleIf_ nothing, thereby the widget is hidden and not present in model.
+
 ```js
 mySchema = {
     "properties": {
@@ -552,6 +584,89 @@ mySchema = {
     }
   }
 ```
+
+`visibleIf` may also declare conditional binding by using `oneOf` or `allOf` properties.
+Where `oneOf` is handled as `OR` and `allOf` is handled as `AND`.
+```
+  "visibleIf": {
+        "allOf": [
+          {
+            "forename": [
+              "$ANY$"
+            ]
+          },
+          {
+            "name": [
+              "$ANY$"
+            ]
+          }
+        ]
+      }
+```
+The `oneOf` a is prioritized before the `allOf` and both are prioritized before the 
+property binding.
+ 
+_`oneOf` and `allOf` oneOf and allOf are reserved keywords and not suitable as property names_
+
+**Arrays**
+
+To address array items or not yet existing properties the `visibleIf` 
+condition path may contain wildcard `*`.
+
+e.g 
+```
+  "visibleIf": {
+        "oneOf": [
+          {
+            "/person/*/age": [
+              "18"
+            ]
+          }
+        ]
+      }
+```
+
+To address a specific item the `visibleIf` 
+condition path should contain the index position.
+
+e.g 
+```
+  "visibleIf": {
+        "oneOf": [
+          {
+            "/person/1/age": [
+              "18"
+            ]
+          }
+        ]
+      }
+```
+
+**Expressions**
+
+Expressions allow a more complex `visibleIf` condition related to the involded fields.  
+To use an expression the value of the item  
+in the conditional array must start with `$EXP$`.  
+When processing the expression a context is available containing  
+a `source` and a `target` object.  
+Where `source` is the `FormProperty` that has the `visibleIf` condition defined  
+and `target` is the `FormProperty` that has been defined by the `path`.
+
+```
+  "myField" : { // SOURCE
+    "visibleIf": {
+          "oneOf": [
+            {
+              "/person/1/age": // TARGET
+              [
+                "$EXP$ target.value < 18"
+              ]
+            }
+          ]
+        }
+   }
+```
+
 
 #### Hidden fields
 When a field has been made invisible by the condition `visibleIf`
@@ -793,15 +908,15 @@ npm install
 Then you can build:
 
 ```bash
-ng build schema-form
+npm run build:lib
 ```
 
 If you want to work with the demo:
 
 ```bash
 npm install -g @angular/cli
-npm innstall
-ng build schema-from
+npm install
+ng build schema-form
 npm start
 ```
 

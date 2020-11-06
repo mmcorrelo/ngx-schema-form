@@ -1,4 +1,7 @@
 import {isBlank} from './utils';
+import {Injectable} from '@angular/core';
+import {ISchema} from './ISchema';
+import {FieldType} from '../template-schema/field/field';
 
 function formatMessage(message, path) {
   return `Parsing error on ${path}: ${message}`;
@@ -14,9 +17,10 @@ function schemaWarning(message, path): void {
   throw new Error(mesg);
 }
 
+@Injectable()
 export class SchemaPreprocessor {
 
-  static preprocess(jsonSchema: any, path = '/'): any {
+  static preprocess(jsonSchema: ISchema, path = '/'): any {
     jsonSchema = jsonSchema || {};
     SchemaPreprocessor.normalizeExtensions(jsonSchema);
     if (jsonSchema.type === 'object') {
@@ -47,7 +51,7 @@ export class SchemaPreprocessor {
     SchemaPreprocessor.checkFieldsUsage(jsonSchema, path);
   }
 
-  private static checkFieldsUsage(jsonSchema, path: string) {
+  private static checkFieldsUsage(jsonSchema: ISchema, path: string) {
     let fieldsId: string[] = Object.keys(jsonSchema.properties);
     let usedFields = {};
     for (let fieldset of jsonSchema.fieldsets) {
@@ -59,13 +63,17 @@ export class SchemaPreprocessor {
       }
     }
 
-    for (let fieldId of fieldsId) {
+    for (const fieldId of fieldsId) {
+      const isRequired = jsonSchema.required && jsonSchema.required.indexOf(fieldId) > -1;
+      if (isRequired && jsonSchema.properties[fieldId]) {
+        jsonSchema.properties[fieldId].isRequired = true;
+      }
       if (usedFields.hasOwnProperty(fieldId)) {
         if (usedFields[fieldId].length > 1) {
           schemaError(`${fieldId} is referenced by more than one fieldset: ${usedFields[fieldId]}`, path);
         }
         delete usedFields[fieldId];
-      } else if (jsonSchema.required.indexOf(fieldId) > -1) {
+      } else if (isRequired) {
         schemaError(`${fieldId} is a required field but it is not referenced as part of a 'order' or a 'fieldset' property`, path);
       } else {
         delete jsonSchema[fieldId];
@@ -80,12 +88,12 @@ export class SchemaPreprocessor {
     }
   }
 
-  private static createFieldsets(jsonSchema) {
+  private static createFieldsets(jsonSchema: ISchema) {
     jsonSchema.order = Object.keys(jsonSchema.properties);
     SchemaPreprocessor.replaceOrderByFieldsets(jsonSchema);
   }
 
-  private static replaceOrderByFieldsets(jsonSchema) {
+  private static replaceOrderByFieldsets(jsonSchema: ISchema) {
     jsonSchema.fieldsets = [{
       id: 'fieldset-default',
       title: jsonSchema.title || '',
@@ -96,7 +104,7 @@ export class SchemaPreprocessor {
     delete jsonSchema.order;
   }
 
-  private static normalizeWidget(fieldSchema: any) {
+  private static normalizeWidget(fieldSchema: ISchema) {
     let widget = fieldSchema.widget;
     if (widget === undefined) {
       widget = {'id': fieldSchema.type};
@@ -106,14 +114,14 @@ export class SchemaPreprocessor {
     fieldSchema.widget = widget;
   }
 
-  private static checkItems(jsonSchema, path) {
+  private static checkItems(jsonSchema: ISchema, path) {
     if (jsonSchema.items === undefined) {
       schemaError('No \'items\' property in array', path);
     }
   }
 
-  private static recursiveCheck(jsonSchema, path: string) {
-    if (jsonSchema.type === 'object') {
+  private static recursiveCheck(jsonSchema: ISchema, path: string) {
+    if (jsonSchema.type === FieldType.Object) {
       for (let fieldId in jsonSchema.properties) {
         if (jsonSchema.properties.hasOwnProperty(fieldId)) {
           let fieldSchema = jsonSchema.properties[fieldId];
@@ -134,9 +142,9 @@ export class SchemaPreprocessor {
     }
   }
 
-  private static removeRecursiveRefProperties(jsonSchema, definitionPath) {
+  private static removeRecursiveRefProperties(jsonSchema: ISchema, definitionPath) {
     // to avoid infinite loop
-    if (jsonSchema.type === 'object') {
+    if (jsonSchema.type === FieldType.Object) {
       for (let fieldId in jsonSchema.properties) {
         if (jsonSchema.properties.hasOwnProperty(fieldId)) {
           if (jsonSchema.properties[fieldId].$ref
@@ -158,7 +166,7 @@ export class SchemaPreprocessor {
    *
    * @param schema JSON schema to enable alias names.
    */
-  private static normalizeExtensions(schema: any): void {
+  private static normalizeExtensions(schema: ISchema): void {
     const extensions = [
         { name: "fieldsets", regex: /^x-?field-?sets$/i },
         { name: "widget",    regex: /^x-?widget$/i },

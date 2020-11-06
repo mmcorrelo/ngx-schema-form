@@ -20,6 +20,8 @@ import {RangeWidget} from './defaultwidgets/range/range.widget';
 import {SelectWidget} from './defaultwidgets/select/select.widget';
 import {StringWidget} from './defaultwidgets/string/string.widget';
 import {DefaultWidgetRegistry} from './defaultwidgets/defaultwidgetregistry';
+import {DisableControlDirective} from './defaultwidgets/_directives/disableControl.directive';
+
 import {
   DefaultWidget
 } from './default.widget';
@@ -27,6 +29,9 @@ import {
 import {WidgetRegistry} from './widgetregistry';
 import {SchemaValidatorFactory, ZSchemaValidatorFactory} from './schemavalidatorfactory';
 import {FormElementComponentAction} from './formelement.action.component';
+import {ExpressionCompilerFactory, JEXLExpressionCompilerFactory} from './expression-compiler-factory';
+
+import { LOG_LEVEL, LogLevel, LogService, DefaultLogService } from './log.service';
 
 const moduleProviders = [
   {
@@ -36,6 +41,18 @@ const moduleProviders = [
   {
     provide: SchemaValidatorFactory,
     useClass: ZSchemaValidatorFactory
+  },
+  {
+    provide: ExpressionCompilerFactory,
+    useClass: JEXLExpressionCompilerFactory
+  },
+  {
+    provide: LOG_LEVEL,
+    useValue: LogLevel.off
+  },
+  {
+    provide: LogService,
+    useClass: DefaultLogService
   }
 ];
 
@@ -58,6 +75,7 @@ const moduleProviders = [
     RangeWidget,
     SelectWidget,
     StringWidget,
+    DisableControlDirective
   ],
   entryComponents: [
     FormElementComponent,
@@ -74,7 +92,7 @@ const moduleProviders = [
     RadioWidget,
     RangeWidget,
     SelectWidget,
-    StringWidget,
+    StringWidget
   ],
   exports: [
     FormComponent,
@@ -91,12 +109,13 @@ const moduleProviders = [
     RadioWidget,
     RangeWidget,
     SelectWidget,
-    StringWidget
+    StringWidget,
+    DisableControlDirective
   ]
 })
 export class SchemaFormModule {
 
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<SchemaFormModule> {
     return {
       ngModule: SchemaFormModule,
       providers: [...moduleProviders]

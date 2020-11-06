@@ -8,7 +8,7 @@ import {
   TemplateSchemaModule,
   WidgetRegistry,
   DefaultWidgetRegistry
-} from 'ngx-schema-form';
+} from '../../../projects/schema-form/src/public_api';
 
 import {
   TemplateSchemaExampleComponent
@@ -21,7 +21,7 @@ describe('TemplateSchemaExampleComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        SchemaFormModule,
+        SchemaFormModule.forRoot(),
         TemplateSchemaModule,
         HttpClientModule,
         FormsModule

@@ -1,32 +1,25 @@
 import {
   Component,
   Input,
-  Output,
-  OnInit,
   AfterContentInit,
   ContentChildren,
-  ViewChild,
   QueryList,
   ElementRef,
-  forwardRef,
   SimpleChanges,
-  SimpleChange,
-  OnChanges
+  OnChanges,
 } from '@angular/core';
-import { Observable, merge } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
-import { Action } from '../../model/action';
 import { ActionRegistry } from '../../model/actionregistry';
 import { Validator } from '../../model/validator';
 
-import { TemplateSchemaElement } from '../template-schema-element';
 import { TemplateSchemaService } from '../template-schema.service';
 import { ButtonComponent } from '../button/button.component';
 
 import { FieldParent } from './field-parent';
 import { FieldType, Field } from './field';
 import { ItemComponent } from './item/item.component';
+import { merge } from 'rxjs';
+import {ISchema} from '../../model/ISchema';
 
 
 @Component({
@@ -76,7 +69,7 @@ Field, OnChanges, AfterContentInit {
   validator: Validator;
 
   @Input()
-  schema: any = { };
+  schema: ISchema = { };
 
   constructor(
     private elementRef: ElementRef,
@@ -86,7 +79,7 @@ Field, OnChanges, AfterContentInit {
     super();
   }
 
-  getSchema(): any {
+  getSchema(): ISchema {
 
     const { properties, items, required } = this.getFieldsSchema(
       this.childFields.filter(field => field !== this)
@@ -94,7 +87,7 @@ Field, OnChanges, AfterContentInit {
 
     const oneOf = this.getOneOf();
 
-    const schema = <any>{
+    const schema: ISchema = {
       type: this.type
     };
 

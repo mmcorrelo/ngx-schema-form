@@ -1,17 +1,23 @@
 import {FormProperty, PropertyGroup} from './formproperty';
 import {FormPropertyFactory} from './formpropertyfactory';
+import { PROPERTY_TYPE_MAPPING } from './typemapping';
 import {SchemaValidatorFactory} from '../schemavalidatorfactory';
 import {ValidatorRegistry} from './validatorregistry';
+import { ExpressionCompilerFactory } from '../expression-compiler-factory';
+import {ISchema} from './ISchema';
+import { LogService } from '../log.service';
 
 export class ArrayProperty extends PropertyGroup {
 
   constructor(private formPropertyFactory: FormPropertyFactory,
               schemaValidatorFactory: SchemaValidatorFactory,
               validatorRegistry: ValidatorRegistry,
-              schema: any,
+              expressionCompilerFactory: ExpressionCompilerFactory,
+              schema: ISchema,
               parent: PropertyGroup,
-              path: string) {
-    super(schemaValidatorFactory, validatorRegistry, schema, parent, path);
+              path: string,
+              logger: LogService) {
+    super(schemaValidatorFactory, validatorRegistry, expressionCompilerFactory, schema, parent, path, logger);
   }
 
   addItem(value: any = null): FormProperty {
@@ -26,8 +32,8 @@ export class ArrayProperty extends PropertyGroup {
     return newProperty;
   }
 
-  removeItem(index: number) {
-    (<FormProperty[]>this.properties).splice(index, 1);
+  removeItem(item: FormProperty) {
+    this.properties = (<FormProperty[]>this.properties).filter(i => i !== item);
     this.updateValueAndValidity(false, true);
   }
 
@@ -76,3 +82,17 @@ export class ArrayProperty extends PropertyGroup {
     }
   }
 }
+
+PROPERTY_TYPE_MAPPING.array = (
+    schemaValidatorFactory: SchemaValidatorFactory,
+    validatorRegistry: ValidatorRegistry,
+    expressionCompilerFactory: ExpressionCompilerFactory,
+    schema: ISchema,
+    parent: PropertyGroup,
+    path: string,
+    formPropertyFactory: FormPropertyFactory,
+    logger: LogService
+) => {
+    return new ArrayProperty(
+        formPropertyFactory, schemaValidatorFactory, validatorRegistry, expressionCompilerFactory, schema, parent, path, logger);
+};

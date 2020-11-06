@@ -8,16 +8,47 @@ export { FormElementComponent } from './lib/formelement.component';
 export { FormElementComponentAction } from './lib/formelement.action.component';
 export { WidgetChooserComponent } from './lib/widgetchooser.component';
 export { WidgetRegistry } from './lib/widgetregistry';
-export { Validator } from './lib/model/validator';
-export { ValidatorRegistry } from './lib/model/validatorregistry';
-export { Action } from './lib/model/action';
-export { ActionRegistry } from './lib/model/actionregistry';
-export { Binding } from './lib/model/binding';
-export { BindingRegistry } from './lib/model/bindingregistry';
+export {
+  Action,
+  ActionRegistry,
+  Binding,
+  BindingRegistry,
+  FormPropertyFactory,
+  FormProperty,
+  PropertyGroup,
+  AtomicProperty,
+  ObjectProperty,  
+  ArrayProperty,
+  StringProperty,
+  BooleanProperty,
+  NumberProperty,  
+  Validator,
+  ValidatorRegistry,
+  SchemaPreprocessor,
+  // <schema def>
+  IButton,
+  IFieldSet,
+  IOneOf,
+  IProperties,
+  ISchema,
+  IWidget
+  // </schema def>
+} from './lib/model';
 export {
   SchemaValidatorFactory,
   ZSchemaValidatorFactory
 } from './lib/schemavalidatorfactory';
+export { 
+  ExpressionCompilerFactory, 
+  ExpressionCompiler, 
+  ExpressionCompilerVisibilityIf, 
+  ExpressionContextVisibilitIf,
+  JEXLExpressionCompilerFactory,
+  JEXLExpressionCompiler,
+  JEXLExpressionCompilerVisibiltyIf
+} from './lib/expression-compiler-factory';
+export { WidgetFactory } from './lib/widgetfactory';
+export { TerminatorService } from './lib/terminator.service';
 export {
   Widget,
   ControlWidget,
@@ -39,8 +70,10 @@ export { StringWidget } from './lib/defaultwidgets/string/string.widget';
 export {
   DefaultWidgetRegistry
 } from './lib/defaultwidgets/defaultwidgetregistry';
+export { DisableControlDirective } from './lib/defaultwidgets/_directives/disableControl.directive'
 
 export { SchemaFormModule } from './lib/schema-form.module';
 export {
   TemplateSchemaModule
 } from './lib/template-schema/template-schema.module';
+export { LogService, LogLevel, LOG_LEVEL } from './lib/log.service';

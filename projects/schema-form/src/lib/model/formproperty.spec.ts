@@ -5,6 +5,8 @@ import {
 } from '../schemavalidatorfactory';
 
 import { ValidatorRegistry } from './validatorregistry';
+import { JEXLExpressionCompilerFactory } from '../expression-compiler-factory';
+import { DefaultLogService, LogLevel } from '../log.service';
 
 class FormPropertyImpl extends FormProperty {
 
@@ -29,9 +31,11 @@ class PropertyGroupImpl extends PropertyGroup {
 describe('FormProperty', () => {
   let THE_SCHEMA_VALIDATOR_FACTORY =  new ZSchemaValidatorFactory();
   let THE_VALIDATOR_REGISTRY = new ValidatorRegistry();
+  let THE_EXPRESSION_COMPILER_FACTORY = new JEXLExpressionCompilerFactory();
   let THE_PROPERTY_SCHEMA = {};
   let THE_PARENT_PROPERTY_SCHEMA = {};
   let THE_VALIDATOR;
+  let THE_LOGGER = new DefaultLogService(LogLevel.off);
 
   let formProperty: FormProperty;
   let propertyGroup: PropertyGroup;
@@ -43,17 +47,21 @@ describe('FormProperty', () => {
     propertyGroup = new PropertyGroupImpl(
       THE_SCHEMA_VALIDATOR_FACTORY,
       THE_VALIDATOR_REGISTRY,
+      THE_EXPRESSION_COMPILER_FACTORY,
       THE_PARENT_PROPERTY_SCHEMA,
       null,
-      ''
+      '',
+      THE_LOGGER
     );
     spyOn(propertyGroup, 'updateValueAndValidity');
     formProperty = new FormPropertyImpl(
       THE_SCHEMA_VALIDATOR_FACTORY,
       THE_VALIDATOR_REGISTRY,
+      THE_EXPRESSION_COMPILER_FACTORY,
       THE_PROPERTY_SCHEMA,
       propertyGroup,
-      ''
+      '',
+      THE_LOGGER
     );
   });
 
@@ -85,9 +93,11 @@ describe('FormProperty', () => {
       let orphanFormProperty = new FormPropertyImpl(
         THE_SCHEMA_VALIDATOR_FACTORY,
         THE_VALIDATOR_REGISTRY,
+        THE_EXPRESSION_COMPILER_FACTORY,
         THE_PROPERTY_SCHEMA,
         propertyGroup,
-        ''
+        '',
+        THE_LOGGER
       );
       let updateValue = (() => { orphanFormProperty.updateValueAndValidity(); });
 

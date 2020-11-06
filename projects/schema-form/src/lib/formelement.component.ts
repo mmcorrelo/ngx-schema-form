@@ -14,7 +14,7 @@ import {ActionRegistry} from './model/actionregistry';
 import {FormProperty} from './model/formproperty';
 import {BindingRegistry} from './model/bindingregistry';
 import {Binding} from './model/binding';
-import {Function} from 'estree';
+import { LogService } from './log.service';
 
 @Component({
   selector: 'sf-form-element',
@@ -45,7 +45,8 @@ export class FormElementComponent implements OnInit, OnDestroy {
   constructor(private actionRegistry: ActionRegistry,
               private bindingRegistry: BindingRegistry,
               private renderer: Renderer2,
-              private elementRef: ElementRef) {
+              private elementRef: ElementRef,
+              private logger: LogService) {
   }
 
   ngOnInit() {
@@ -64,14 +65,17 @@ export class FormElementComponent implements OnInit, OnDestroy {
     }
   }
 
-  private createBinding(eventId, listener) {
+  private createBinding(eventId, listeners) {
     this.unlisten.push(this.renderer.listen(this.elementRef.nativeElement,
       eventId,
       (event) => {
-        if (listener instanceof Function) {
-          listener(event, this.formProperty);
-        } else {
-          console.warn('Calling non function handler for eventId ' + eventId + ' for path ' + this.formProperty.path);
+        const _listeners = Array.isArray(listeners) ? listeners : [listeners]
+        for (const _listener of _listeners) {
+          if (_listener instanceof Function) {
+            try { _listener(event, this.formProperty); } catch (e) { this.logger.error(`Error calling bindings event listener for '${eventId}'`, e) }
+          } else {
+            this.logger.warn('Calling non function handler for eventId ' + eventId + ' for path ' + this.formProperty.path);
+          }
         }
       }));
   }
@@ -100,7 +104,10 @@ export class FormElementComponent implements OnInit, OnDestroy {
 
   onWidgetInstanciated(widget: Widget<any>) {
     this.widget = widget;
-    let id = 'field' + (FormElementComponent.counter++);
+    let id = this.formProperty.canonicalPathNotation || 'field' + (FormElementComponent.counter++);
+    if (this.formProperty.root.rootName) {
+      id = `${this.formProperty.root.rootName}:${id}`;
+    }
 
     this.widget.formProperty = this.formProperty;
     this.widget.schema = this.formProperty.schema;

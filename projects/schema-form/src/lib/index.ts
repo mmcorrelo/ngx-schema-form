@@ -3,19 +3,25 @@ export { FormElementComponent } from './formelement.component';
 export { FormElementComponentAction } from './formelement.action.component';
 export { WidgetChooserComponent } from './widgetchooser.component';
 export { WidgetRegistry } from './widgetregistry';
-export { Validator } from './model/validator';
-export { ValidatorRegistry } from './model/validatorregistry';
-export { Action } from './model/action';
-export { ActionRegistry } from './model/actionregistry';
-export { Binding } from './model/binding';
-export { BindingRegistry } from './model/bindingregistry';
+export * from './model';
 export { SchemaValidatorFactory, ZSchemaValidatorFactory } from './schemavalidatorfactory';
+export { 
+        ExpressionCompilerFactory, 
+        ExpressionCompiler, 
+        ExpressionCompilerVisibilityIf, 
+        ExpressionContextVisibilitIf,
+        JEXLExpressionCompilerFactory,
+        JEXLExpressionCompiler,
+        JEXLExpressionCompilerVisibiltyIf
+} from './expression-compiler-factory';
 export {
     Widget,
     ControlWidget,
     ArrayLayoutWidget,
     ObjectLayoutWidget,
 } from './widget';
+export { WidgetFactory } from './widgetfactory';
+export { TerminatorService } from './terminator.service';
 export {
     ArrayWidget,
     CheckboxWidget,
@@ -28,7 +34,9 @@ export {
     StringWidget,
     TextAreaWidget,
     ButtonWidget,
-    DefaultWidgetRegistry
+    DefaultWidgetRegistry,
+    DisableControlDirective
 } from './defaultwidgets';
 export { SchemaFormModule } from './schema-form.module';
 export { TemplateSchemaModule } from './template-schema/template-schema.module';
+export { LogService, LogLevel, LOG_LEVEL } from './log.service';

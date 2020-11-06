@@ -6,15 +6,22 @@ import {
 } from '../schemavalidatorfactory';
 
 import { ValidatorRegistry } from './validatorregistry';
+import {PropertyBindingRegistry} from '../property-binding-registry';
+import { JEXLExpressionCompilerFactory } from '../expression-compiler-factory';
+import {ISchema} from './ISchema';
+import { DefaultLogService, LogLevel } from '../log.service';
 
 describe('ObjectProperty', () => {
 
   let A_VALIDATOR_REGISTRY = new ValidatorRegistry();
   let A_SCHEMA_VALIDATOR_FACTORY = new ZSchemaValidatorFactory();
-  let A_FORM_PROPERTY_FACTORY = new FormPropertyFactory(A_SCHEMA_VALIDATOR_FACTORY, A_VALIDATOR_REGISTRY);
+  let A_PROPERTY_BINDING_REGISTRY=new PropertyBindingRegistry();
+  let A_EXPRESSION_COMPILER_FACTORY = new JEXLExpressionCompilerFactory();
+  let A_LOGGER = new DefaultLogService(LogLevel.off);
+  let A_FORM_PROPERTY_FACTORY = new FormPropertyFactory(A_SCHEMA_VALIDATOR_FACTORY, A_VALIDATOR_REGISTRY, A_PROPERTY_BINDING_REGISTRY, A_EXPRESSION_COMPILER_FACTORY, A_LOGGER);
+  
 
-
-  let THE_OBJECT_SCHEMA = {
+  const THE_OBJECT_SCHEMA: ISchema = {
     type: 'object',
     properties: {
       FOO: {type: 'integer'},
@@ -31,9 +38,11 @@ describe('ObjectProperty', () => {
       A_FORM_PROPERTY_FACTORY,
       A_SCHEMA_VALIDATOR_FACTORY,
       A_VALIDATOR_REGISTRY,
+      A_EXPRESSION_COMPILER_FACTORY,
       THE_OBJECT_SCHEMA,
       null,
-      ''
+      '',
+      A_LOGGER
     );
   });
 

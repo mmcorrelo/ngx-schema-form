@@ -22,28 +22,32 @@ import {BindingRegistry} from './model/bindingregistry';
 import {SchemaValidatorFactory} from './schemavalidatorfactory';
 import {WidgetFactory} from './widgetfactory';
 import {TerminatorService} from './terminator.service';
+import {PropertyBindingRegistry} from './property-binding-registry';
+import { ExpressionCompilerFactory } from './expression-compiler-factory';
+import {ISchema} from './model/ISchema';
+import { LogService } from './log.service';
 
-export function useFactory(schemaValidatorFactory, validatorRegistry) {
-  return new FormPropertyFactory(schemaValidatorFactory, validatorRegistry);
+export function useFactory(schemaValidatorFactory, validatorRegistry, propertyBindingRegistry, expressionCompilerFactory, logService) {
+  return new FormPropertyFactory(schemaValidatorFactory, validatorRegistry, propertyBindingRegistry, expressionCompilerFactory, logService);
 }
 
 @Component({
   selector: 'sf-form',
   template: `
-    <form>
-      <sf-form-element
-        *ngIf="rootProperty" [formProperty]="rootProperty"></sf-form-element>
+    <form *ngIf="rootProperty" [attr.name]="rootProperty.rootName" [attr.id]="rootProperty.rootName">
+      <sf-form-element [formProperty]="rootProperty"></sf-form-element>
     </form>`,
   providers: [
     ActionRegistry,
     ValidatorRegistry,
+    PropertyBindingRegistry,
     BindingRegistry,
     SchemaPreprocessor,
     WidgetFactory,
     {
       provide: FormPropertyFactory,
       useFactory: useFactory,
-      deps: [SchemaValidatorFactory, ValidatorRegistry]
+      deps: [SchemaValidatorFactory, ValidatorRegistry, PropertyBindingRegistry, ExpressionCompilerFactory, LogService]
     },
     TerminatorService,
     {
@@ -55,7 +59,7 @@ export function useFactory(schemaValidatorFactory, validatorRegistry) {
 })
 export class FormComponent implements OnChanges, ControlValueAccessor {
 
-  @Input() schema: any = null;
+  @Input() schema: ISchema | null = null;
 
   @Input() model: any;
 
@@ -212,7 +216,6 @@ export class FormComponent implements OnChanges, ControlValueAccessor {
       if (!this.onChangeCallback) {
         this.setModel(value);
       }
-      this.modelChange.emit(value);
     }
     this.onChange.emit({value: value});
   }
