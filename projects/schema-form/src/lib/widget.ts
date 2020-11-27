@@ -49,6 +49,10 @@ export class ArrayLayoutWidget extends Widget<ArrayProperty> implements AfterVie
       control.setErrors(errors, {emitEvent: true});
     });
   }
+
+  isPropertyArraySpec(prop: string) {
+    return this.schema.hasOwnProperty(prop) && Array.isArray(this.formProperty.properties);
+  }
 }
 
 export class ObjectLayoutWidget extends Widget<ObjectProperty> implements AfterViewInit {

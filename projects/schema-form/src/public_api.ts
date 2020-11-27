@@ -17,11 +17,11 @@ export {
   FormProperty,
   PropertyGroup,
   AtomicProperty,
-  ObjectProperty,  
+  ObjectProperty,
   ArrayProperty,
   StringProperty,
   BooleanProperty,
-  NumberProperty,  
+  NumberProperty,
   Validator,
   ValidatorRegistry,
   SchemaPreprocessor,
@@ -38,10 +38,10 @@ export {
   SchemaValidatorFactory,
   ZSchemaValidatorFactory
 } from './lib/schemavalidatorfactory';
-export { 
-  ExpressionCompilerFactory, 
-  ExpressionCompiler, 
-  ExpressionCompilerVisibilityIf, 
+export {
+  ExpressionCompilerFactory,
+  ExpressionCompiler,
+  ExpressionCompilerVisibilityIf,
   ExpressionContextVisibilitIf,
   JEXLExpressionCompilerFactory,
   JEXLExpressionCompiler,
