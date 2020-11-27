@@ -9,22 +9,22 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-import {Action} from './model/action';
-import {ActionRegistry} from './model/actionregistry';
-import {FormProperty} from './model/formproperty';
-import {FormPropertyFactory} from './model/formpropertyfactory';
-import {SchemaPreprocessor} from './model/schemapreprocessor';
-import {ValidatorRegistry} from './model/validatorregistry';
-import {Validator} from './model/validator';
-import {Binding} from './model/binding';
-import {BindingRegistry} from './model/bindingregistry';
+import { Action } from './model/action';
+import { ActionRegistry } from './model/actionregistry';
+import { FormProperty } from './model/formproperty';
+import { FormPropertyFactory } from './model/formpropertyfactory';
+import { SchemaPreprocessor } from './model/schemapreprocessor';
+import { ValidatorRegistry } from './model/validatorregistry';
+import { Validator } from './model/validator';
+import { Binding } from './model/binding';
+import { BindingRegistry } from './model/bindingregistry';
 
-import {SchemaValidatorFactory} from './schemavalidatorfactory';
-import {WidgetFactory} from './widgetfactory';
-import {TerminatorService} from './terminator.service';
-import {PropertyBindingRegistry} from './property-binding-registry';
+import { SchemaValidatorFactory } from './schemavalidatorfactory';
+import { WidgetFactory } from './widgetfactory';
+import { TerminatorService } from './terminator.service';
+import { PropertyBindingRegistry } from './property-binding-registry';
 import { ExpressionCompilerFactory } from './expression-compiler-factory';
-import {ISchema} from './model/ISchema';
+import { ISchema } from './model/ISchema';
 import { LogService } from './log.service';
 
 export function useFactory(schemaValidatorFactory, validatorRegistry, propertyBindingRegistry, expressionCompilerFactory, logService) {
@@ -77,7 +77,7 @@ export class FormComponent implements OnChanges, ControlValueAccessor {
 
   @Output() onErrorChange = new EventEmitter<{ value: any[] }>();
 
-  @Output() onErrorsChange = new EventEmitter<{value: any}>();
+  @Output() onErrorsChange = new EventEmitter<{ value: any }>();
 
   rootProperty: FormProperty = null;
 
@@ -139,7 +139,7 @@ export class FormComponent implements OnChanges, ControlValueAccessor {
       SchemaPreprocessor.preprocess(this.schema);
       this.rootProperty = this.formPropertyFactory.createProperty(this.schema);
       if (this.model) {
-        // this.rootProperty.reset(this.model, false);
+        this.rootProperty.reset(this.model, false);
       }
 
       this.rootProperty.valueChanges.subscribe(
@@ -147,13 +147,13 @@ export class FormComponent implements OnChanges, ControlValueAccessor {
       );
 
       this.rootProperty.errorsChanges.subscribe(value => {
-        this.onErrorChange.emit({value: value});
+        this.onErrorChange.emit({ value: value });
         this.isValid.emit(!(value && value.length));
       });
 
     }
 
-    if (this.schema && (changes.model || changes.schema )) {
+    if (this.schema && (changes.model || changes.schema)) {
       this.rootProperty.reset(this.model, false);
       this.cdr.detectChanges();
     }
@@ -217,6 +217,6 @@ export class FormComponent implements OnChanges, ControlValueAccessor {
         this.setModel(value);
       }
     }
-    this.onChange.emit({value: value});
+    this.onChange.emit({ value: value });
   }
 }
