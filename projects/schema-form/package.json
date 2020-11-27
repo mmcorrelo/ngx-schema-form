@@ -1,9 +1,9 @@
 {
-  "name": "ngx-schema-form",
-  "version": "2.5.8",
+  "name": "temp-ngx-schema-form",
+  "version": "2.5.10",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/guillotinaweb/ngx-schema-form"
+    "url": "git+https://github.com/mmcorrelo/ngx-schema-form"
   },
   "keywords": [
     "angular",
@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/guillotinaweb/ngx-schema-form/issues"
+    "url": "https://github.com/mmcorrelo/ngx-schema-form/issues"
   },
   "contributors": [
     "Frank Bessou <fbessou@free.fr>",

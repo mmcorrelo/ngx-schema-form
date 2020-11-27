@@ -1,6 +1,6 @@
 {
-  "name": "ngx-schema-form-demo",
-  "version": "0.0.0",
+  "name": "temp-ngx-schema-form-demo",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -13,7 +13,6 @@
     "lint": "ng lint",
     "get_version": "cat ./projects/schema-form/package.json | grep version  | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]'"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "~9.0.4",
     "@angular/common": "~9.0.4",
@@ -24,7 +23,7 @@
     "@angular/platform-browser-dynamic": "~9.0.4",
     "@angular/router": "~9.0.4",
     "bootstrap": "^4.4.1",
-    "core-js": "^2.5.4",
+    "core-js": "^3.8.0",
     "jexl": "^2.2.2",
     "ngx-schema-form": "file:projects/schema-form",
     "rxjs": "^6.5.4",
