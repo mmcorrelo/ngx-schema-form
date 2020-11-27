@@ -1,27 +1,20 @@
-import {
-  Component, ElementRef,
-  Input, OnDestroy,
-  OnInit, Renderer2
-} from '@angular/core';
-
-import {
-  FormControl
-} from '@angular/forms';
-
-import {Widget} from './widget';
-
-import {ActionRegistry} from './model/actionregistry';
-import {FormProperty} from './model/formproperty';
-import {BindingRegistry} from './model/bindingregistry';
-import {Binding} from './model/binding';
+import { Component, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
+import Constants from './lib.constants';
 import { LogService } from './log.service';
-
+import { ActionRegistry } from './model/actionregistry';
+import { Binding } from './model/binding';
+import { BindingRegistry } from './model/bindingregistry';
+import { FormProperty } from './model/formproperty';
+import { Widget } from './widget';
 @Component({
   selector: 'sf-form-element',
   template: `
     <div *ngIf="formProperty.visible"
-         [class.has-error]="!control.valid"
-         [class.has-success]="control.valid">
+         [class.has-error]="isFormInvalid"
+         [class.has-success]="!isFormInvalid">
       <sf-widget-chooser
         (widgetInstanciated)="onWidgetInstanciated($event)"
         [widgetInfo]="formProperty.schema.widget">
@@ -30,10 +23,10 @@ import { LogService } from './log.service';
     </div>`
 })
 export class FormElementComponent implements OnInit, OnDestroy {
-
   private static counter = 0;
 
   @Input() formProperty: FormProperty;
+
   control: FormControl = new FormControl('', () => null);
 
   widget: Widget<any> = null;
@@ -42,16 +35,27 @@ export class FormElementComponent implements OnInit, OnDestroy {
 
   unlisten = [];
 
+  isFormInvalid = false;
+
+  unsubscriber$: Subject<void> = new Subject<void>();
+
   constructor(private actionRegistry: ActionRegistry,
-              private bindingRegistry: BindingRegistry,
-              private renderer: Renderer2,
-              private elementRef: ElementRef,
-              private logger: LogService) {
+    private bindingRegistry: BindingRegistry,
+    private renderer: Renderer2,
+    private elementRef: ElementRef,
+    private logger: LogService) {
   }
 
   ngOnInit() {
     this.parseButtons();
     this.setupBindings();
+
+    this.control.statusChanges
+      .pipe(
+        debounceTime(Constants.DEBOUNCED_TIME),
+        takeUntil(this.unsubscriber$)
+      )
+      .subscribe(status => this.isFormInvalid = status === Constants.INVALID_STATUS_CONTROL);
   }
 
   private setupBindings() {
@@ -104,7 +108,9 @@ export class FormElementComponent implements OnInit, OnDestroy {
 
   onWidgetInstanciated(widget: Widget<any>) {
     this.widget = widget;
-    let id = this.formProperty.canonicalPathNotation || 'field' + (FormElementComponent.counter++);
+
+    let id = this.formProperty.canonicalPathNotation || 'field' + (FormElementComponent.counter++);
+
     if (this.formProperty.root.rootName) {
       id = `${this.formProperty.root.rootName}:${id}`;
     }
@@ -117,10 +123,11 @@ export class FormElementComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.unsubscriber$.next();
+    this.unsubscriber$.complete();
+
     if (this.unlisten) {
-      this.unlisten.forEach((item) => {
-        item();
-      });
+      this.unlisten.forEach(item => item());
     }
   }
 
